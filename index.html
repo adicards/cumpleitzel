@@ -1,0 +1,129 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>¡Felices 18 Años, Itzel! 🎉</title>
+  
+  <!-- Meta tags para vista previa en WhatsApp -->
+  <meta property="og:type" content="website">
+  <meta property="og:title" content="¡Tienes una tarjeta de cumpleaños especial! 🎂">
+  <meta property="og:description" content="Toca aquí para abrir tu tarjeta de cumpleaños interactiva.">
+  <meta property="og:image" content="https://images.unsplash.com/photo-1513151233558-d860c5398176?q=80&w=600">
+
+  <!-- Tailwind CSS & Lucide Icons -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script src="https://unpkg.com/lucide@latest"></script>
+  <!-- Canvas Confetti para efecto de fiesta -->
+  <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
+
+  <style>
+    @keyframes pulse-glow {
+      0%, 100% { box-shadow: 0 0 15px rgba(236, 72, 153, 0.5); }
+      50% { box-shadow: 0 0 30px rgba(236, 72, 153, 0.9); }
+    }
+    .glow-btn { animation: pulse-glow 2s infinite; }
+  </style>
+</head>
+<body class="bg-slate-950 text-white font-sans min-h-screen flex justify-center items-center p-3 relative overflow-x-hidden">
+
+  <!-- PANTALLA DE APERTURA / SOBRE (Permite reproducir la música al dar clic) -->
+  <div id="envelopeScreen" class="fixed inset-0 z-50 bg-slate-950 flex flex-col items-center justify-center p-6 text-center transition-opacity duration-700">
+    <div class="space-y-6 max-w-sm">
+      <div class="w-24 h-24 bg-pink-500/10 border border-pink-500/30 rounded-full flex items-center justify-center mx-auto text-pink-400 animate-bounce">
+        <i data-lucide="gift" class="w-12 h-12"></i>
+      </div>
+      <div>
+        <h1 class="text-2xl font-bold text-pink-400">¡Tienes un mensaje especial!</h1>
+        <p class="text-xs text-gray-400 mt-2">Alguien preparó una sorpresa de cumpleaños para ti.</p>
+      </div>
+      <button onclick="openCard()" class="glow-btn bg-gradient-to-r from-pink-500 to-rose-500 hover:from-pink-600 hover:to-rose-600 text-white font-bold py-4 px-8 rounded-full text-base transition-all transform hover:scale-105 flex items-center justify-center gap-2 mx-auto shadow-lg">
+        <i data-lucide="sparkles" class="w-5 h-5"></i>
+        <span>Abrir Tarjeta 🎁</span>
+      </button>
+    </div>
+  </div>
+
+  <!-- TARJETA PRINCIPAL (Se muestra al abrir) -->
+  <div id="mainCard" class="max-w-md w-full bg-slate-900/90 border border-pink-500/30 rounded-3xl p-6 text-center shadow-2xl relative z-10 backdrop-blur-md hidden opacity-0 transition-opacity duration-700 space-y-6">
+    
+    <!-- Encabezado / Banner -->
+    <div class="relative">
+      <span class="bg-pink-500/20 border border-pink-500/40 text-pink-300 text-xs font-bold px-4 py-1.5 rounded-full uppercase tracking-widest inline-block mb-3">
+        Special Birthday Edition
+      </span>
+      <h2 class="text-4xl font-extrabold text-transparent bg-clip-text bg-gradient-to-r from-pink-400 via-rose-300 to-purple-400">
+        ¡Felices 18 Años!
+      </h2>
+      <h3 class="text-3xl font-black text-white tracking-wide mt-1">
+        ITZEL ✨
+      </h3>
+    </div>
+
+    <!-- Foto o GIF del Cumpleañero -->
+    <div class="relative w-48 h-48 mx-auto rounded-full overflow-hidden border-4 border-pink-500/50 shadow-pink-500/20 shadow-2xl">
+      <img src="https://images.unsplash.com/photo-1513151233558-d860c5398176?q=80&w=600" alt="Happy Birthday" class="w-full h-full object-cover">
+    </div>
+
+    <!-- Dedicatoria Emotiva -->
+    <div class="bg-slate-950/60 border border-slate-800 rounded-2xl p-4 text-gray-200 space-y-2 text-sm leading-relaxed">
+      <p class="font-medium text-pink-200">
+        "Que esta nueva etapa de tus 18 años llegue llena de sueños cumplidos, alegría, éxito y momentos inolvidables."
+      </p>
+      <p class="text-xs text-gray-400 italic">
+        ¡A celebrar la vida como se debe! 🥂✨
+      </p>
+    </div>
+
+    <!-- Botón Interactivo de Felicitación por WhatsApp -->
+    <div class="pt-2">
+      <a href="https://wa.me/?text=%C2%A1Feliz%20cumplea%C3%B1os%20Itzel!%20%F0%9F%8E%82%20Te%20deseo%20lo%20mejor%20en%20tus%2018%20a%C3%B1os." 
+         target="_blank" 
+         class="flex items-center justify-center gap-2 bg-emerald-600 hover:bg-emerald-500 text-white font-bold py-3.5 px-6 rounded-2xl transition-all shadow-lg text-sm">
+        <i data-lucide="message-circle" class="w-5 h-5"></i>
+        <span>Enviar Felicitación por WhatsApp</span>
+      </a>
+    </div>
+
+    <!-- Reproductor de Audio (Invisible pero sonando en bucle) -->
+    <audio id="bgMusic" loop preload="auto">
+      <!-- Coloca tu archivo happy_birthday.mp3 aquí -->
+      <source src="happy_birthday.mp3" type="audio/mpeg">
+    </audio>
+
+    <div class="text-[10px] text-gray-500 uppercase tracking-widest pt-2">
+      VP Experience Group • Tarjetas Interactivas
+    </div>
+  </div>
+
+  <script>
+    lucide.createIcons();
+
+    function openCard() {
+      // 1. Iniciar la música
+      const audio = document.getElementById('bgMusic');
+      audio.play().catch(e => console.log("Audio play error:", e));
+
+      // 2. Efecto de Confeti en pantalla
+      confetti({
+        particleCount: 120,
+        spread: 80,
+        origin: { y: 0.6 }
+      });
+
+      // 3. Ocultar sobre de apertura y mostrar tarjeta con animación
+      const envelope = document.getElementById('envelopeScreen');
+      const card = document.getElementById('mainCard');
+
+      envelope.classList.add('opacity-0');
+      setTimeout(() => {
+        envelope.classList.add('hidden');
+        card.classList.remove('hidden');
+        setTimeout(() => {
+          card.classList.remove('opacity-0');
+        }, 50);
+      }, 700);
+    }
+  </script>
+</body>
+</html>
